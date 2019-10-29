@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "description": "Challenge for Web API II Module",
   "private": true,
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "server": "nodemon index.js"
+    "server": "nodemon server.js"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "knex": "^0.19.4",
     "sqlite3": "^4.1.0"
   },
