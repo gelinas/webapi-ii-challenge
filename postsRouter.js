@@ -194,7 +194,7 @@ router.post('/:id/comments', (req, res) => {
         res.status(400).json({ error: 'Please provide text for the comment.'})
     }
     
-    Posts.update(id, commentInformation)
+    Posts.insertComment(commentInformation)
         .then(comment => {
             res.status(201).json(comment)
         })
