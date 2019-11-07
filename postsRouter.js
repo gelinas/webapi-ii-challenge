@@ -72,16 +72,65 @@ router.get('/:id', (req, res) => {
 // | DELETE | /api/posts/:id          
 // | Removes the post with the specified id and returns the **deleted post object**. You may need to make additional calls to the database in order to satisfy this requirement.
 
-// router.post('/', (req, res) => {
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+
+    Posts.findById(id)
+        .then(post => {
+            // if (!post) {
+            if (post.length === 0) {
+                res.status(404).json({ error: 'The post with the specified ID does not exist'})
+            }
+        })
+        .catch(err => {
+            console.log('Posts.findById in delete to /:id error', err);
+            res.status(500).json({ error: 'The post information could not be retrieved.'})
+        })
+
+    Posts.remove(id)
+        .then(post => {
+            res.status(200).json({ message: `The post with ID ${id} has been deleted.`})
+        })
+        .catch(err => {
+            console.log('Posts.remove in delete to /:id error', err);
+            res.status(500).json({ error: 'The post could not be removed.'})
+        })
     
-// })
+})
 
 // | PUT    | /api/posts/:id          
 // | Updates the post with the specified `id` using data from the `request body`. Returns the modified document, **NOT the original**.                                           |
 
-// router.post('/', (req, res) => {
-    
-// })
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const postInformation = req.body;
+
+    Posts.findById(id)
+        .then(post => {
+            // if (!post) {
+            if (post.length === 0) {
+                res.status(404).json({ error: 'The post with the specified ID does not exist'})
+            }
+        })
+        .catch(err => {
+            console.log('Posts.findById in put to /:id error', err);
+            res.status(500).json({ error: 'The post information could not be retrieved.'})
+        })
+
+    if(!postInformation.title || !postInformation.contents) {
+        res.status(400).json({ error: 'Please provide title and contents for the post.'})
+    }
+
+    Posts.update(id, postInformation)
+        .then(newPostCount => {
+            res.status(200).json(newPostCount);
+        })
+        .catch(err => {
+            console.log('Posts.insert in put to / error', err);
+            res.status(500).json({ error: 'There was an error while updating the post in the database.'})
+        })
+
+})
 
 // | GET    | /api/posts/:id/comments 
 // | Returns an array of all the comment objects associated with the post with the specified id.
@@ -131,7 +180,8 @@ router.post('/:id/comments', (req, res) => {
 
     Posts.findById(id)
         .then(post => {
-            if (!post) {
+            // console.log(post);
+            if (post.length === 0) {
                 res.status(404).json({ error: 'The post with the specified ID does not exist'});
             }
         })
@@ -144,7 +194,7 @@ router.post('/:id/comments', (req, res) => {
         res.status(400).json({ error: 'Please provide text for the comment.'})
     }
     
-    Posts.update(id, commentInformation)
+    Posts.insertComment(commentInformation)
         .then(comment => {
             res.status(201).json(comment)
         })
